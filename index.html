@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/p5.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.11.8/lib/addons/p5.sound.min.js"></script>
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
+  <!-- Theme (optional) -->
+  <link rel="stylesheet" href="editorTheme.css?v=102">
+  <!-- Core JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js"></script>
+  <!-- Language Mode (JavaScript example) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js"></script>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1d0a3c">
+
+  <link rel="stylesheet" type="text/css" href="style.css?v=115">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/svg+xml" sizes="any"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Domine:wght@400..700&display=swap"
+    rel="stylesheet">
+
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+    rel="stylesheet"> -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <title>Hocus Pocus</title>
+</head>
+
+<body>
+
+  <div id="canvas-container">
+    <div class="clickable" id="edit-btn">
+      <span class="material-symbols-outlined">
+        edit
+      </span>
+      Edit
+    </div>
+  </div>
+
+  <div id="editor-container" class="active">
+    <div id="header">
+      <div class="header-item" id="options-container">
+        <div class="settings-item clickable" id="settings-btn">
+          <span class="material-symbols-outlined">
+            settings
+          </span>
+          Settings
+        </div>
+
+        <div class="settings-item clickable" id="history-btn">
+          <span class="material-symbols-outlined">
+            history
+          </span>
+          History
+        </div>
+
+
+      </div>
+
+      <div class="header-item" id="tabs-container">
+        <div class="tab-item clickable active" id="tab-idea">
+          1. Idea
+        </div>
+        <div class="tab-item clickable" id="tab-instructions">
+          2. Instructions
+        </div>
+        <div class="tab-item clickable" id="tab-effect">
+          3. Effect
+        </div>
+      </div>
+    </div>
+
+    <div id="editor-body">
+      <div class="editor-item active" id="idea-container">
+        <div class="ui-block">
+          <h2>Describe the effect you are thinking of ✨</h2>
+          <h3>We will use this to generate step-by-step instructions</h3>
+          <textarea class="prompt-box" id="idea-prompt"
+            placeholder="Use your own words to describe the effect you want to create, like &quot;fireworks that sparkle like stars&quot;. Be as descriptive as you want."></textarea>
+          <button class="btn-ai" id="generate-from-idea">Generate Instructions</button>
+        </div>
+      </div>
+
+      <div class="editor-item" id="instructions-container">
+        <div class="ui-block">
+          <h2>Break it down into simple steps 🧩</h2>
+          <h3>We will use this to generate code</h3>
+          <textarea class="prompt-box" id="instructions-prompt"></textarea>
+          <button class="btn-ai" id="generate-from-instructions">Generate Code</button>
+        </div>
+      </div>
+
+      <div class="editor-item" id="effect-container">
+        <div class="ui-block">
+          <div class="ui-item">
+            <h2>Here is the effect in code!</h2>
+          </div>
+
+          <div class="ui-item">
+            <h3>Use this box to change specific parts of the code 🔧</h3>
+            <textarea class="prompt-box" id="refine-prompt"
+              placeholder="Be specific and change only one thing at a time."></textarea>
+            <button class="btn-ai" id="generate-from-refinement">Refine Code</button>
+          </div>
+
+          <div class="ui-item">
+            <span class="section-heading"><b>Effect background color</b></span>
+            <div class="color-palette" id="color-palette">
+              <div class="color-swatch" data-color="#000000" style="background: #000000;" title="Black"></div>
+              <div class="color-swatch" data-color="#FFFFFF" style="background: #FFFFFF;" title="White"></div>
+              <div class="color-swatch" data-color="#606060" style="background: #606060;" title="Gray"></div>
+              <div class="color-swatch" data-color="#A0A0A0" style="background: #A0A0A0;" title="Silver"></div>
+              <div class="color-swatch" data-color="#FF0000" style="background: #FF0000;" title="Red"></div>
+              <div class="color-swatch" data-color="#800000" style="background: #800000;" title="Maroon"></div>
+              <div class="color-swatch" data-color="#FFFF00" style="background: #FFFF00;" title="Yellow"></div>
+              <div class="color-swatch" data-color="#808000" style="background: #808000;" title="Olive"></div>
+              <div class="color-swatch" data-color="#00FF00" style="background: #00FF00;" title="Lime"></div>
+              <div class="color-swatch" data-color="#008000" style="background: #008000;" title="Green"></div>
+              <div class="color-swatch" data-color="#00FFFF" style="background: #00FFFF;" title="Aqua"></div>
+              <div class="color-swatch" data-color="#008080" style="background: #008080;" title="Teal"></div>
+              <div class="color-swatch" data-color="#0000FF" style="background: #0000FF;" title="Blue"></div>
+              <div class="color-swatch" data-color="#000080" style="background: #000080;" title="Navy"></div>
+              <div class="color-swatch" data-color="#FF00FF" style="background: #FF00FF;" title="Fuchsia"></div>
+              <div class="color-swatch" data-color="#800080" style="background: #800080;" title="Purple"></div>
+              <div class="color-swatch" data-color="#FFA500" style="background: #FFA500;" title="Orange"></div>
+              <div class="color-swatch" data-color="#A52A2A" style="background: #A52A2A;" title="Brown"></div>
+              <div class="color-swatch" data-color="#FFC0CB" style="background: #FFC0CB;" title="Pink"></div>
+              <div class="color-swatch" data-color="#FFD700" style="background: #FFD700;" title="Gold"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-editor">
+          <textarea id="code-editor"></textarea>
+        </div>
+
+        <div class="effect-buttons">
+          <div class="clickable" id="play-btn">
+            <span class="material-symbols-outlined">
+              wand_stars
+            </span>
+            Play
+          </div>
+
+          <div class="clickable" id="save-btn">
+            <span class="material-symbols-outlined">
+              save
+            </span>
+            Save Effect
+          </div>
+        </div>
+      </div>
+
+      <div class="clickable" id="spellbook-btn">
+        <span class="material-symbols-outlined">
+          book_ribbon
+        </span>
+        Spellbook
+      </div>
+
+      <div class="side-bar active" id="spellbook-container">
+        <div class="ui-block" id="spellbook-welcome">
+          <h1>Welcome to <span class="app-name">Hocus Pocus</span></h1>
+          <h2>choose a spell to cast</h2>
+        </div>
+
+        <div class="effect-buttons">
+          <button id="export-spellbook">Export spellbook</button>
+          <button id="import-spellbook">Import spellbook</button>
+        </div>
+
+        <div class="ui-block" id="spell-list">
+
+        </div>
+
+        <div class="close-btn clickable">
+          <span class="material-symbols-outlined">
+            arrow_back
+          </span>
+        </div>
+      </div>
+
+      <div class="side-bar" id="history-container">
+        <div class="ui-block">
+          <h2>History</h2>
+        </div>
+
+        <div class="ui-block">
+          <div class="side-bar-buttons">
+            <button id="export-history">Export history</button>
+            <button id="import-history">Import history</button>
+          </div>
+        </div>
+
+        <div class="ui-block" id="history-list">
+
+        </div>
+
+        <div class="close-btn clickable">
+          <span class="material-symbols-outlined">
+            arrow_back
+          </span>
+        </div>
+      </div>
+
+      <div class="side-bar" id="settings-container">
+        <div class="ui-block">
+          <h2>About</h2>
+          <p>
+            This is a tool to create and edit interactive and animated effects built in p5.js using AI. Animation
+            effects
+            are triggered by mouse or touch interactions. Effects are created in three steps. First, describe the idea
+            behind the effect. Second, break it down into simple steps. Third, write the code based on the steps. This
+            tool uses generative AI to help with this process, however, as with all AI, the results may not be exactly
+            what you want. Work back and forth with the AI system, and edit the code directly to get closer to what you
+            are looking for.
+          </p>
+        </div>
+
+        <div class="ui-block">
+          <h3>API Key</h3>
+          <p>This application uses the GPT4.1 engine by OpenAI. Get an API key from <a target="_blank"
+              href="https://platform.openai.com/">here</a>.</p>
+          <input type="password" id="api-key" value="">
+        </div>
+
+        <div class="ui-block" id="credits">
+          <smalltext>
+            © Interactive Materials Lab, National University of Singapore, 2025.
+          </smalltext>
+        </div>
+
+        <div class="close-btn clickable">
+          <span class="material-symbols-outlined">
+            arrow_back
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-wrapper" id="save-spell-modal-wrapper">
+      <div class="modal" id="save-spell-modal">
+        <h2>Save Effect</h2>
+        <input type="text" id="spell-name" placeholder="Name your effect">
+        <div id="save-cancel-btns">
+          <button id="save-spell-btn">Save</button>
+          <button id="cancel-save-spell-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-wrapper" id="spell-saving-modal-wrapper">
+      <div class="modal" id="spell-saving-modal">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <div class="modal-wrapper" id="load-spell-modal-wrapper">
+      <div class="modal" id="load-spell-modal">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <div id="busy">
+      <div class="spinner"></div>
+    </div>
+
+    <script src="exampleSpells.js?v=103"></script>
+    <script src="script.js?v=115"></script>
+</body>
+
+</html>

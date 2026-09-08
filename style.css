@@ -1,0 +1,1117 @@
+:root {
+  --font-color: white;
+  --tekhelet: #491898;
+  --indianred: #E05263;
+  --aquamarine: #0FF4C6;
+  --goldenrod: #DAA520;
+  --coral: #FF7F50;
+  --editor-bg-color: var(--tekhelet);
+  --header-bg-color: color-mix(in srgb, black 60%, var(--tekhelet) 40%);
+  --sidebar-bg-color: color-mix(in srgb, white 30%, var(--tekhelet) 70%);
+  --tab-bg-color: var(--indianred);
+  --textarea-bg-color: color-mix(in srgb, white 10%, var(--tekhelet) 90%);
+  --border-radius: 1rem;
+  --header-mobile-height: 8rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 24;
+  margin-right: 0.4rem;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(0, 0, 0, 0);
+  scrollbar-width: thin;
+  padding: 0;
+  margin: 0;
+}
+
+body,
+html {
+  background: #222;
+  color: var(--font-color);
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.1rem;
+  font-style: normal;
+  font-weight: 400;
+}
+
+h2 {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--font-color);
+  margin-bottom: 0.2rem;
+}
+
+h3 {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.section-heading {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.1rem;
+  font-style: normal;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.clickable,
+button {
+  user-select: none;
+  cursor: pointer;
+  color: var(--font-color);
+  font-family: 'Barlow', sans-serif;
+  transition: all 150ms ease-in-out;
+}
+
+.clickable:hover,
+button:hover {
+  transform-origin: center;
+  transform: scale(1.03);
+}
+
+.btn-ai {
+  background: var(--goldenrod);
+  color: black;
+  border: none;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  float: right;
+  margin-left: 1rem;
+}
+
+.btn-ai:hover {
+  background: color-mix(in srgb, white 60%, var(--goldenrod) 40%);
+}
+
+textarea {
+  font-family: 'Barlow', sans-serif;
+  font-size: 1.1rem;
+  font-style: normal;
+  font-weight: 400;
+  color: var(--font-color);
+  background: var(--textarea-bg-color);
+  border: none;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  width: 100%;
+  field-sizing: content;
+  min-height: 10rem;
+  max-height: 30rem;
+  resize: none;
+  outline: none;
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: color-mix(in srgb, white 50%, var(--tekhelet) 50%);
+  opacity: 1;
+}
+
+#canvas-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  top: 0;
+  left: 100vw;
+  transition: all 200ms ease-in-out;
+  z-index: 3;
+}
+
+#canvas-container #edit-btn {
+  position: absolute;
+  bottom: 2rem;
+  left: calc(100vw - 8rem);
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: 6rem;
+  padding: 1rem;
+  background: #F0F0F0;
+  color: black;
+  border-radius: var(--border-radius);
+  z-index: 9;
+}
+
+#editor-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  top: 0;
+  left: -100vw;
+  transition: all 200ms ease-in-out;
+}
+
+#editor-container.active,
+#canvas-container.active {
+  left: 0;
+}
+
+/* 
+HEADER
+*/
+
+#header {
+  position: absolute;
+  width: 100%;
+  height: 6rem;
+  background: var(--header-bg-color);
+  overflow: hidden;
+}
+
+#header #options-container {
+  position: absolute;
+  right: 2rem;
+  bottom: 1rem;
+}
+
+#header #tabs-container {
+  position: absolute;
+  left: 1rem;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.settings-item {
+  float: left;
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.settings-item .material-symbols-outlined {
+  font-size: 1.0rem;
+  margin-right: 0.3rem;
+}
+
+.tab-item {
+  float: left;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  background: color-mix(in srgb, black 40%, var(--tab-bg-color) 60%);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  color: color-mix(in srgb, white 70%, var(--tekhelet) 30%);
+  transition: all 200ms ease-in-out;
+}
+
+.tab-item.active {
+  background: var(--tab-bg-color);
+  color: white;
+  font-weight: 600;
+}
+
+.tab-item:hover {
+  color: color-mix(in srgb, white 90%, var(--indianred) 10%);
+  padding-bottom: 1.05rem;
+  transition: all 200ms ease-in-out;
+}
+
+/* 
+EDITOR
+*/
+
+#editor-body {
+  position: absolute;
+  width: 100%;
+  height: calc(100vh - 6rem);
+  top: 6rem;
+  background: var(--editor-bg-color);
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.editor-item {
+  position: absolute;
+  width: 100%;
+  max-height: 0px;
+  min-height: 0px;
+  transition: all 200ms ease-in-out;
+  overflow: hidden;
+  background: var(--editor-bg-color);
+}
+
+.editor-item.active {
+  min-height: 100%;
+  padding-bottom: 10rem;
+}
+
+#idea-container,
+#instructions-container {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+}
+
+#idea-container .ui-block,
+#instructions-container .ui-block {
+  width: 50%;
+  padding: 2rem;
+}
+
+.code-editor {
+  display: block;
+  position: relative;
+  float: left;
+  width: 50%;
+  padding: 0;
+}
+
+.code-editor .CodeMirror-code::after {
+  content: "";
+  display: block;
+  height: 20rem;
+  pointer-events: none;
+}
+
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  margin: 0.5rem 0;
+}
+
+.color-palette #color-palette {
+  padding-right: 2rem;
+}
+
+.color-swatch {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.color-swatch.selected {
+  border-color: var(--aquamarine);
+  border-width: 3px;
+  transform: scale(1.05);
+}
+
+#effect-container {
+  display: block;
+}
+
+#effect-container .ui-block {
+  display: block;
+  position: relative;
+  float: left;
+  width: 50%;
+  padding: 2rem;
+}
+
+.effect-buttons {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-direction: row-reverse;
+  z-index: 10;
+}
+
+#spellbook-container .effect-buttons {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-direction: row-reverse;
+  z-index: 10;
+}
+
+#spellbook-container.active .effect-buttons {
+  position: fixed;
+}
+
+#effect-container #play-btn,
+button#export-spellbook {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: auto;
+  padding: 1rem;
+  background: var(--aquamarine);
+  color: var(--tekhelet);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 1.1rem;
+  border: none
+}
+
+#effect-container #save-btn,
+button#import-spellbook {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: auto;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--tekhelet) 10%, white 90%);
+  color: var(--tekhelet);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 1.1rem;
+  border: none
+}
+
+#effect-container #play-btn:hover,
+.effect-buttons #export-spellbook:hover {
+  background: color-mix(in srgb, white 60%, var(--aquamarine) 40%);
+}
+
+#effect-container #save-btn:hover,
+.effect-buttons #import-spellbook:hover {
+  background: color-mix(in srgb, var(--tekhelet) 20%, white 80%);
+}
+
+/* 
+SIDE BAR
+*/
+
+.side-bar {
+  position: fixed;
+  left: -100vw;
+  top: 0;
+  box-sizing: border-box;
+  transition: all 200ms ease-in-out;
+  height: 100vh;
+  overflow: hidden;
+  overflow-y: scroll;
+  background: var(--sidebar-bg-color);
+  padding: 2rem;
+  padding-top: 5rem;
+  z-index: 999;
+}
+
+.side-bar.active {
+  left: 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+}
+
+.side-bar h3 {
+  font-weight: 500
+}
+
+.side-bar p {
+  color: color-mix(in srgb, white 90%, var(--tekhelet) 10%);
+  margin-bottom: 1rem
+}
+
+.side-bar a {
+  color: var(--aquamarine)
+}
+
+.side-bar smalltext {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, white 80%, var(--tekhelet) 20%);
+  font-style: normal;
+  font-weight: 400;
+}
+
+.side-bar input[type="password"] {
+  color: var(--indianred);
+  font-size: 1.1rem;
+  background: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  width: 100%;
+  field-sizing: content;
+  resize: none;
+  outline: none;
+}
+
+.side-bar #credits {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+}
+
+#history-list {
+  display: block;
+  /* Remove list styling */
+  padding: 0;
+  margin-top: 1rem;
+  border-radius: var(--border-radius);
+}
+
+.history-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.5rem;
+  align-items: center;
+  padding-bottom: 0.6rem;
+  padding-top: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  list-style: none;
+}
+
+.history-item .date-time,
+.history-item .prompt {
+  grid-column: 1;
+}
+
+.history-item .date-time {
+  grid-row: 1;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: -0.4rem;
+}
+
+.history-item .prompt {
+  grid-row: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: none;
+  min-width: 0;
+  font-size: 0.9rem;
+}
+
+.history-btn {
+  grid-row: 1 / 3;
+  align-self: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.history-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+  transition: all 200ms ease-in-out;
+}
+
+.history-btn.with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+.history-btn.with-icon:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.history-btn.with-icon.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.side-bar-buttons {
+  position: absolute;
+  top: 5rem;
+  right: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-direction: row-reverse;
+}
+
+.side-bar #import-history,
+.side-bar #export-history {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: auto;
+  padding: 0.4rem;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  background: var(--aquamarine);
+  color: var(--tekhelet);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 1rem;
+  border: none
+}
+
+.side-bar #export-history:hover {
+  background: color-mix(in srgb, white 60%, var(--aquamarine) 40%)
+}
+
+.side-bar #import-history {
+  background: color-mix(in srgb, var(--tekhelet) 10%, white 90%);
+}
+
+.side-bar #import-history:hover {
+  background: white;
+}
+
+#settings-container {
+  width: 400px;
+}
+
+#history-container,
+#spellbook-container {
+  width: 100vw;
+}
+
+#spellbook-container {
+  background: var(--header-bg-color);
+  height: 100vh;
+  overflow-y: scroll;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#spellbook-container .ui-block {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+#spellbook-container #spellbook-welcome {
+  position: relative;
+  float: left;
+  margin-bottom: 5.0rem;
+}
+
+#spellbook-container #spellbook-welcome h1 {
+  position: relative;
+  float: left;
+  clear: both;
+  font-family: "Domine", "Barlow", sans-serif;
+  font-size: 2.5rem;
+  line-height: 1.1em;
+  font-weight: 600;
+}
+
+#spellbook-container #spellbook-welcome span.app-name {
+  background: linear-gradient(110deg, var(--indianred) 30%, var(--coral) 80%, var(--goldenrod));
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* color: var(--indianred); */
+}
+
+#spellbook-container #spellbook-welcome h2 {
+  position: relative;
+  float: left;
+  clear: both;
+  font-family: "Domine", "Barlow", sans-serif;
+  font-size: 2.5rem;
+  line-height: 1.1em;
+  font-weight: 600;
+}
+
+#spellbook-container.active .close-btn {
+  position: fixed;
+}
+
+/*
+SPELL LIST
+*/
+
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+}
+
+.modal-wrapper.active {
+  z-index: 999;
+}
+
+#save-spell-modal {
+  width: 400px;
+  height: auto;
+  background: var(--editor-bg-color);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+}
+
+#save-cancel-btns {
+  display: flex;
+  gap: 1rem;
+  flex-direction: row-reverse;
+}
+
+.modal input[type="text"] {
+  color: var(--indianred);
+  font-family: "Barlow", sans-serif;
+  font-weight: 400;
+  font-size: 1.1rem;
+  background: white;
+  border: none;
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: var(--border-radius);
+  width: 100%;
+  field-sizing: content;
+  resize: none;
+  outline: none;
+}
+
+#save-spell-btn {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: auto;
+  padding: 1rem;
+  background: var(--aquamarine);
+  color: var(--tekhelet);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  border: none;
+  font-size: 1.1rem;
+}
+
+#cancel-save-spell-btn {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: auto;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--tekhelet) 10%, white 90%);
+  color: var(--tekhelet);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  border: none;
+  font-size: 1.1rem;
+}
+
+#save-spell-btn:hover {
+  background: color-mix(in srgb, white 60%, var(--aquamarine) 40%);
+}
+
+#cancel-save-spell-btn:hover {
+  background: color-mix(in srgb, var(--tekhelet) 20%, white 80%);
+}
+
+#spell-list {
+  /* position: absolute; */
+  position: relative;
+  width: 100vw;
+  /* height: 100vh; */
+  display: grid;
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 2.0fr));
+  /* grid-template-rows: repeat(auto-fill, 18rem); */
+  gap: 2rem;
+  padding: 0;
+  /* overflow-y: scroll; */
+  padding-bottom: 20rem;
+  /* padding-top: 20rem; */
+  z-index: -1;
+}
+
+#spellbook-container.active #spell-list::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 10vh;
+  background: linear-gradient(0deg, var(--header-bg-color) 0%, rgba(0, 0, 0, 0));
+}
+
+#add-spell-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 3px dashed rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  gap: 0.25rem;
+}
+
+#add-spell-btn .material-symbols-outlined {
+  font-size: 3rem;
+  margin: 0;
+}
+
+#add-spell-btn span:not(.material-symbols-outlined) {
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 500;
+}
+
+#add-spell-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border: 3px dashed white;
+  transform: translateY(-2px);
+  transition: all 0.2s ease-
+}
+
+/* Spell Item Base */
+.spell-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 18rem;
+  border-radius: var(--border-radius);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+/* Example spell tag */
+.spell-item.example::after {
+  content: "EXAMPLE";
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.3rem 0.5rem;
+  background: white;
+  color: var(--tekhelet);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  z-index: 5;
+}
+
+/* Delete Spell Button */
+.del-spell-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.spell-item:hover {
+  opacity: 1;
+  border: 3px solid white;
+  transform: translateY(-1px);
+  transition: all 200ms ease-in-out;
+  box-shadow: 0px 2px 10px black 20%;
+}
+
+.del-spell-btn:hover {
+  background: var(--indianred);
+  transform: translateY(-1px);
+  transition: all 200ms ease-in-out;
+  box-shadow: 0px 2px 10px black 20%;
+}
+
+.del-spell-btn .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: white;
+  margin: 0;
+}
+
+/* Spell Image/Thumbnail */
+.spell-item .spell-img {
+  position: relative;
+  width: 100%;
+  height: 60%;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Spell Metadata (text area) */
+.spell-item .spell-meta {
+  padding: 0.75rem;
+  height: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.spell-item .spell-meta h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spell-item .spell-meta .date-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  #spell-list {
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1rem;
+  }
+
+  .spell-item {
+    height: 10rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  #spell-list {
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  .spell-item {
+    height: 12rem;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1600px) {
+  #spell-list {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1.2fr));
+    gap: 2rem;
+  }
+
+  .spell-item {
+    height: 14rem;
+  }
+}
+
+#spellbook-btn {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: auto;
+  padding: 1rem;
+  background: none;
+  color: white;
+  outline: 1px solid white;
+  border-radius: var(--border-radius);
+  z-index: 2;
+}
+
+#spellbook-btn:hover {
+  background: color-mix(in srgb, white 20%, var(--tekhelet) 80%);
+}
+
+#spell-saving-modal,
+#load-spell-modal {
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid var(--aquamarine);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 0.8s linear infinite;
+}
+
+/*
+BUSY
+*/
+
+#busy {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  user-select: none;
+}
+
+#busy.active {
+  z-index: 999;
+}
+
+@media (width <=800px) {
+
+  body,
+  html {
+    font-size: 17px;
+  }
+
+  #header {
+    height: var(--header-mobile-height);
+  }
+
+  #header .header-item {
+    width: 100%;
+  }
+
+  #header #options-container {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  #header .settings-item {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+
+  #header #tabs-container {
+    left: 0rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  #header .tab-item {
+    margin: 0 0.25rem;
+  }
+
+  #editor-body {
+    height: calc(100vh - var(--header-mobile-height));
+    top: var(--header-mobile-height);
+  }
+
+  #idea-container,
+  #instructions-container,
+  #effect-container {
+    display: block;
+    left: -100vw;
+    top: 0;
+    max-height: 10000px;
+    padding-top: 2rem;
+  }
+
+  #idea-container.active,
+  #instructions-container.active,
+  #effect-container.active {
+    left: 0;
+    top: 0;
+    max-height: 10000px;
+  }
+
+  .ui-block {
+    width: 100% !important;
+    padding: 1.5rem !important;
+  }
+
+  .code-editor {
+    width: 100% !important;
+  }
+
+  #spellbook-btn {
+    position: fixed;
+    top: 0.5rem;
+    right: 0.5rem;
+    bottom: unset;
+    left: unset;
+  }
+
+  #effect-container.active #play-btn {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 2;
+  }
+
+  #effect-container.active::before {
+    content: "";
+    position: fixed;
+    top: unset;
+    right: unset;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 20vh;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0));
+    z-index: 1;
+  }
+
+  #effect-container.active #save-btn {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    z-index: 2;
+  }
+
+  .side-bar {
+    width: 100% !important;
+    padding: 3rem 0.5rem;
+  }
+
+  .copy-history {
+    display: none !important;
+  }
+
+  .side-bar #credits {
+    position: absolute;
+    bottom: 2rem;
+    left: 0;
+  }
+
+  #spellbook-container #spellbook-welcome {
+    margin-bottom: 0;
+  }
+
+  #spellbook-container #spellbook-welcome h1,
+  #spellbook-container #spellbook-welcome h2 {
+    font-size: 1.5rem;
+  }
+
+}

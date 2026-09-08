@@ -1,0 +1,16 @@
+{
+  "name": "Hocus Pocus",
+  "short_name": "Hocus Pocus",
+  "description": "",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1d0a3c",
+  "icons": [
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

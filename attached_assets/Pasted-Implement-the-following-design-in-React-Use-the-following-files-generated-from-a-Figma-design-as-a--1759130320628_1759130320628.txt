@@ -1,0 +1,281 @@
+Implement the following design in React. Use the following files generated from a Figma design as a specification and guide:
+
+```src/styles/Idea.module.css
+@import "https://fonts.googleapis.com/css?family=Barlow:0,500;0,400;0,700&display=swap";
+.Idea_181_2266 {
+  background: #491898;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+}
+.Header_181_2267 {
+  background: linear-gradient(#0000 0%, #0003 100%),
+    linear-gradient(#0009 0% 100%), #491898;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 1921px;
+  height: 144px;
+  padding: 0 100px;
+  display: flex;
+}
+.TabRadio_181_1943 {
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: 1px 20px;
+  display: flex;
+}
+.Tab_181_1862 {
+  background: #ff5c38;
+  border-radius: 12px 12px 0 0;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  display: flex;
+}
+.TabTitle_181_1828 {
+  color: #fff;
+  font-family: Barlow;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  display: inline-block;
+}
+.Tab_181_1863 {
+  opacity: 0.5;
+  background: #f3ea6f;
+  border-radius: 12px 12px 0 0;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  display: flex;
+  box-shadow: inset 0 -4px 10px #00000040;
+}
+.TabTitle_181_1830 {
+  color: #a29924;
+  font-family: Barlow;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  display: inline-block;
+}
+.Tab_181_1864 {
+  opacity: 0.5;
+  background: #f3ea6f;
+  border-radius: 12px 12px 0 0;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  display: flex;
+  box-shadow: inset 0 -4px 10px #00000040;
+}
+.UtilRadio_181_1944 {
+  align-items: center;
+  gap: 20px;
+  height: 44px;
+  display: flex;
+}
+.UtilButton_181_1923 {
+  align-items: center;
+  gap: 4px;
+  display: flex;
+}
+.generated__181_1916 {
+  color: #fffc;
+  text-align: center;
+  font-family: SF Pro Text;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.History_181_1917 {
+  color: #fffc;
+  font-family: Barlow;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.UtilButton_181_1927 {
+  align-items: center;
+  gap: 4px;
+  display: flex;
+}
+.generated__181_1921 {
+  color: #fffc;
+  text-align: center;
+  font-family: SF Pro Text;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.Settings_181_1922 {
+  color: #fffc;
+  font-family: Barlow;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.Body_181_2268 {
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  display: flex;
+}
+.Left_181_2269 {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 1921px;
+  height: 936px;
+  padding: 100px;
+  display: flex;
+}
+.Effect_181_2270 {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  width: 850px;
+  display: flex;
+}
+.WhatMagicalEffectWillYouImagine_181_2271 {
+  color: #fff;
+  font-family: Barlow;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  display: inline-block;
+}
+.TextInput_181_2272 {
+  box-sizing: border-box;
+  background: #ffffff1a;
+  border: 3px solid #ffffff80;
+  border-radius: 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 30px;
+  display: flex;
+}
+.HelperText_181_2022 {
+  color: #fff;
+  opacity: 0.25;
+  font-family: Barlow;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.Button_181_2025 {
+  opacity: 0.5;
+  background: linear-gradient(#ffffff80 0% 100%), #491898;
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  display: flex;
+}
+.Text_181_1679 {
+  color: #fff;
+  text-align: center;
+  font-family: Barlow;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  display: inline-block;
+}
+.Button_202_5022 {
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+  background: #00000003;
+  border: 2px solid #ffffff80;
+  border-radius: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  display: flex;
+  position: absolute;
+  bottom: 100px;
+  left: 100px;
+}
+.Icon_181_2341 {
+  color: #fff;
+  text-align: center;
+  font-family: SF Pro Text;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  display: inline-block;
+}
+.Text_181_2342 {
+  color: #fff;
+  text-align: center;
+  font-family: Barlow;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  display: inline-block;
+}
+
+```
+
+---
+
+```src/components/Idea.tsx
+import React from 'react';
+import styles from '../styles/Idea.module.css';
+
+
+export default function Idea() {
+  return (
+    <div className={styles.Idea_181_2266}>
+      <div className={styles.Header_181_2267}>
+        <div className={styles.TabRadio_181_1943}>
+          <div className={styles.Tab_181_1862}><span className={styles.TabTitle_181_1828}>1. Idea</span></div>
+          <div className={styles.Tab_181_1863}><span className={styles.TabTitle_181_1830}>2. Instructions</span></div>
+          <div className={styles.Tab_181_1864}><span className={styles.TabTitle_181_1830}>3. Effect</span></div>
+        </div>
+        <div className={styles.UtilRadio_181_1944}>
+          <div className={styles.UtilButton_181_1923}><span className={styles.generated__181_1916}>&#x1008D4;</span><span className={styles.History_181_1917}>History</span></div>
+          <div className={styles.UtilButton_181_1927}><span className={styles.generated__181_1921}>&#x1008CB;</span><span className={styles.Settings_181_1922}>Settings</span></div>
+        </div>
+      </div>
+      <div className={styles.Body_181_2268}>
+        <div className={styles.Left_181_2269}>
+          <div className={styles.Effect_181_2270}><span className={styles.WhatMagicalEffectWillYouImagine_181_2271}>What magical effect will you imagine? &#x2728;</span>
+            <div className={styles.TextInput_181_2272}><span className={styles.HelperText_181_2022}>Describe the spell in your own words, like &#x2018;fireworks that sparkle into stars&#x2019; or &#x2018;bubbles that float upward and pop&#x2019;.</span>
+              <div className={styles.Button_181_2025}><span className={styles.Text_181_1679}>Generate effect</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={styles.Button_202_5022}><span className={styles.Icon_181_2341}>&#x10070E;</span><span className={styles.Text_181_2342}>Spells</span></div>
+    </div>
+  );
+}
+```
+
