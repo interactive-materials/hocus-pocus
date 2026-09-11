@@ -13,9 +13,10 @@ let codeEdited = false;
 let bgc = "#141414";
 
 let apiKey = "";
-let gptModel = "gpt-4.1";
-let maxTokens = 32768;
+let gptModel = "gpt-5.6-luna";
+let maxTokens = 5000;
 let temperature = 0.5;
+let reasoningLevel = "medium";
 let effectCode = ``;
 
 let effectPrompt = ``;
@@ -416,7 +417,7 @@ function setup() {
     if (effectPrompt.length > 0) {
       busy = true;
       document.querySelector("#busy").classList.add("active");
-      askGptEffect(gptModel, prePrompt, effectPrompt, maxTokens, temperature);
+      askGptEffect(gptModel, prePrompt, effectPrompt, maxTokens, temperature, reasoningLevel);
       codeEditor.setValue("");
       effectCode = "";
       localStorage.setItem("effectCode", effectCode);
@@ -430,7 +431,7 @@ function setup() {
     if (codeInstructions.length > 0) {
       busy = true;
       document.querySelector("#busy").classList.add("active");
-      askGptInstructions(gptModel, systemPrompt, `Effect Description: ${effectPrompt} | Code Guidance: ${codeInstructions}`, maxTokens, temperature);
+      askGptInstructions(gptModel, systemPrompt, `Effect Description: ${effectPrompt} | Code Guidance: ${codeInstructions}`, maxTokens, temperature, reasoningLevel);
     } else {
       alert("Please write the instructions");
     }
@@ -442,7 +443,7 @@ function setup() {
     if (refineCode.length > 0) {
       busy = true;
       document.querySelector("#busy").classList.add("active");
-      askGptRefinement(gptModel, `System: ${refineCodePrompt} | Refinement: ${refineCode}`, `${effectCode}`, maxTokens, temperature);
+      askGptRefinement(gptModel, `System: ${refineCodePrompt} | Refinement: ${refineCode}`, `${effectCode}`, maxTokens, temperature, reasoningLevel);
     } else {
       alert("Please enter refinement instructions");
     }
@@ -550,7 +551,7 @@ function refreshHistory() {
   });
 }
 
-function askGptEffect(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temperature) {
+function askGptEffect(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temperature, _reasoningLevel) {
   fetch(`https://api.openai.com/v1/responses`, {
     method: "POST",
     headers: {
@@ -564,7 +565,7 @@ function askGptEffect(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temper
         { role: "user", content: _userPrompt },
       ],
       max_output_tokens: _maxTokens,
-      temperature: _temperature
+      reasoning: { effort: _reasoningLevel }
     }),
   })
     .then((response) => response.json())
@@ -609,7 +610,7 @@ function askGptEffect(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temper
     });
 }
 
-function askGptInstructions(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temperature) {
+function askGptInstructions(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temperature, _reasoningLevel) {
   fetch(`https://api.openai.com/v1/responses`, {
     method: "POST",
     headers: {
@@ -623,7 +624,7 @@ function askGptInstructions(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _
         { role: "user", content: _userPrompt },
       ],
       max_output_tokens: _maxTokens,
-      temperature: _temperature
+      reasoning: { effort: _reasoningLevel }
     }),
   })
     .then((response) => response.json())
@@ -683,7 +684,7 @@ function askGptInstructions(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _
     });
 }
 
-function askGptRefinement(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temperature) {
+function askGptRefinement(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _temperature, _reasoningLevel) {
   fetch(`https://api.openai.com/v1/responses`, {
     method: "POST",
     headers: {
@@ -696,8 +697,8 @@ function askGptRefinement(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _te
         { role: "system", content: _systemPrompt },
         { role: "user", content: _userPrompt },
       ],
-      max_output_tokens: _maxTokens,
-      temperature: _temperature
+      max_output_tokens: _maxTokens,    
+      reasoning: { effort: _reasoningLevel }
     }),
   })
     .then((response) => response.json())
