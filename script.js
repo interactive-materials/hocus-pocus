@@ -11,6 +11,8 @@ let busy = false;
 let codeEdited = false;
 
 let bgc = "#141414";
+let effectControlValues = Object.freeze({});
+let normalizedControlSchema = {};
 
 let apiKey = "";
 let gptModel = "gpt-5.6-luna";
@@ -32,7 +34,7 @@ Do not include any explanation or other details.
 Format the response as a bulleted list with - characters.
 Return only the step by step instructions without any further elaboration before or after.`;
 
-let systemPrompt = `You are a creative coder skilled in p5.js. Produce a JavaScript object for an animation effect triggered by mouse or touch interactions.
+let systemPrompt = `You are a creative coder and VFX artist skilled in p5.js. Produce a JavaScript object for an animation effect triggered by mouse or touch interactions.
 
 Output:
 - Only return a JavaScript object literal { ... }.
@@ -43,10 +45,24 @@ Output:
 Required properties/methods (must always exist):
 - triggered: number → millis() timestamp, default -1000000.
 - duration: number → animation lifetime (ms).
-- trigger(objects, x, y): called on mousePressed. Updates triggered. Saves x, y position of instance if required.
-- update(objects): runs before display(). Updates self from objects except this, may reference shared data if defined.
-- display(objects): called in draw(). Renders effect with p5.js functions.
+- controlSchema: object → 3-6 meaningful visual controls when the effect has adjustable visuals, otherwise {}.
+- trigger(objects, x, y, controls): called on mousePressed. Updates triggered. Saves x, y position of instance if required.
+- update(objects, controls): runs before display(). Updates self from objects except this, may reference shared data if defined.
+- display(objects, controls): called in draw(). Renders effect with p5.js functions.
 
+Control schema:
+- Each key must be a unique JavaScript identifier and maps to one control definition.
+- Supported definitions:
+  - range: { type: "range", label, default, min, max, step }
+  - color: { type: "color", label, default } where default is a 6-digit hex color.
+  - checkbox: { type: "checkbox", label, default } where default is boolean.
+  - select: { type: "select", label, default, options } where options is an array of strings.
+- Expose only meaningful visual choices, not lifecycle or internal state such as triggered, duration, positions, velocities, counters, or loop indexes.
+- Read adjustable values from the controls argument. Values are live and must affect visible and future instances immediately.
+- Do not mutate controls or controlSchema inside the effect.
+- Use the Effect Description to infer which visual properties the user is most likely to want to adjust. 
+Prioritize controlSchema entries that correspond to explicitly mentioned qualities such as color, size, speed, quantity, shape, intensity, spread, and animation duration.
+- Note: Do not pass a hex color and alpha as two arguments to fill() or stroke(). For transparency, create a p5.Color with color(hexValue), call setAlpha(alpha), then pass that p5.Color to fill() or stroke().
 Effect-specific properties/methods (preferred location):
 - Store all other state and helper functions directly in the object (e.g. position, velocity, colors, easing functions).
 - Keep them unique and self-contained to avoid conflicts.
@@ -78,9 +94,19 @@ Rules:
 Required properties/methods (must always exist):
 - triggered: number → millis() timestamp, default -1000000.
 - duration: number → animation lifetime (ms).
-- trigger(objects, x, y): called on mousePressed. Updates triggered. Saves x, y position of instance if required.
-- update(objects): runs before display(). Updates self from objects except this, may reference shared data if defined.
-- display(objects): called in draw(). Renders effect with p5.js functions.
+- controlSchema: object → preserve existing controls and keep them synchronized with the refined code. Add controls for newly adjustable visual values when appropriate.
+- trigger(objects, x, y, controls): called on mousePressed. Updates triggered. Saves x, y position of instance if required.
+- update(objects, controls): runs before display(). Updates self from objects except this, may reference shared data if defined.
+- display(objects, controls): called in draw(). Renders effect with p5.js functions.
+
+Control schema:
+- Supported types are range, color, checkbox, and select.
+- range requires label, default, min, max, and step.
+- color requires a 6-digit hex default; checkbox requires a boolean default.
+- select requires a string default and an array of string options containing that default.
+- Read adjustable values from the controls argument so changes affect visible and future instances immediately.
+- Never expose lifecycle or internal state, and never mutate controls or controlSchema.
+- Note: Do not pass a hex color and alpha as two arguments to fill() or stroke(). For transparency, create a p5.Color with color(hexValue), call setAlpha(alpha), then pass that p5.Color to fill() or stroke().
 
 Effect-specific properties/methods (preferred location):
 - Store all other state and helper functions directly in the object (e.g. position, velocity, colors, easing functions).
@@ -158,7 +184,7 @@ function setup() {
   if (localStorage.getItem("effectCode")) {
     effectCode = localStorage.getItem("effectCode");
     codeEditor.setValue(effectCode);
-    evaluateEffectCode();
+    evaluateEffectCode({ preserveControls: false });
   }
 
   if (localStorage.getItem("spells")) {
@@ -236,6 +262,35 @@ function setup() {
   document.querySelector("#edit-btn").addEventListener("click", (e) => {
     document.querySelector("#editor-container").classList.add("active");
     document.querySelector("#canvas-container").classList.remove("active");
+    closeEffectControls(false);
+  });
+
+  document.querySelector("#controls-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const panel = document.querySelector("#effect-controls-panel");
+    const isOpen = panel.classList.toggle("active");
+    panel.inert = !isOpen;
+    panel.setAttribute("aria-hidden", String(!isOpen));
+    document.querySelector("#controls-btn").setAttribute("aria-expanded", String(isOpen));
+    if (isOpen) {
+      const firstControl = panel.querySelector("#effect-controls input, #effect-controls select");
+      (firstControl || document.querySelector("#close-controls-btn")).focus();
+    }
+  });
+
+  document.querySelector("#close-controls-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeEffectControls();
+  });
+
+  document.querySelector("#effect-controls-panel").addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+  });
+
+  document.querySelector("#effect-controls-panel").addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeEffectControls();
+    }
   });
 
   document.querySelector("#save-btn").addEventListener("click", (e) => {
@@ -293,6 +348,9 @@ function setup() {
                 check = false;
               }
               if (s.type !== "example" && s.type !== "user") {
+                check = false;
+              }
+              if ("controlValues" in s && !isPlainObject(s.controlValues)) {
                 check = false;
               }
               if (s.type === "example") {
@@ -408,7 +466,6 @@ function setup() {
       evaluateEffectCode();
       localStorage.setItem("effectCode", effectCode);
       codeEdited = false;
-      codeError = false;
     }
   })
 
@@ -420,6 +477,9 @@ function setup() {
       askGptEffect(gptModel, prePrompt, effectPrompt, maxTokens, temperature, reasoningLevel);
       codeEditor.setValue("");
       effectCode = "";
+      effectControlValues = Object.freeze({});
+      normalizedControlSchema = {};
+      renderEffectControls();
       localStorage.setItem("effectCode", effectCode);
     } else {
       alert("Please describe the idea");
@@ -501,8 +561,7 @@ function refreshHistory() {
       codeInstructions = h.instructions;
       effectCode = h.code;
 
-      evaluateEffectCode();
-      codeError = false;
+      evaluateEffectCode({ preserveControls: false });
       codeEdited = false;
 
       localStorage.setItem("effectPrompt", h.prompt);
@@ -656,9 +715,8 @@ function askGptInstructions(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _
           console.log(effectCode);
           codeEditor.setValue(effectCode);
           localStorage.setItem("effectCode", effectCode);
-          evaluateEffectCode();
+          evaluateEffectCode({ preserveControls: false, restorePersisted: false });
           busy = false;
-          codeError = false;
           codeEdited = false;
 
           history = [];
@@ -732,7 +790,6 @@ function askGptRefinement(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _te
           localStorage.setItem("effectCode", effectCode);
           evaluateEffectCode();
           busy = false;
-          codeError = false;
           codeEdited = false;
 
           document.querySelector("#refine-prompt").value = "";
@@ -758,13 +815,238 @@ function askGptRefinement(_gptModel, _systemPrompt, _userPrompt, _maxTokens, _te
     });
 }
 
-function evaluateEffectCode() {
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function getEffectControlsStorageKey() {
+  let hash = 5381;
+  for (let i = 0; i < effectCode.length; i++) {
+    hash = ((hash << 5) + hash) ^ effectCode.charCodeAt(i);
+  }
+  return `effectControlValues:${hash >>> 0}`;
+}
+
+function normalizeControlSchema(schema) {
+  if (!isPlainObject(schema)) return {};
+
+  const normalized = {};
+  Object.entries(schema).slice(0, 12).forEach(([key, definition]) => {
+    if (!/^[A-Za-z_$][\w$]*$/.test(key) || !isPlainObject(definition)) return;
+
+    const type = definition.type;
+    const label = typeof definition.label === "string" && definition.label.trim()
+      ? definition.label.trim().slice(0, 80)
+      : key;
+
+    if (type === "range") {
+      const min = Number(definition.min);
+      const max = Number(definition.max);
+      const step = Number(definition.step);
+      const defaultValue = Number(definition.default);
+      if (![min, max, step, defaultValue].every(Number.isFinite) || min >= max || step <= 0) return;
+      normalized[key] = {
+        type,
+        label,
+        min,
+        max,
+        step,
+        default: constrain(defaultValue, min, max)
+      };
+    } else if (type === "color") {
+      if (typeof definition.default !== "string" || !/^#[0-9a-f]{6}$/i.test(definition.default)) return;
+      normalized[key] = { type, label, default: definition.default };
+    } else if (type === "checkbox") {
+      if (typeof definition.default !== "boolean") return;
+      normalized[key] = { type, label, default: definition.default };
+    } else if (type === "select") {
+      if (!Array.isArray(definition.options)) return;
+      const options = definition.options
+        .filter((option) => typeof option === "string")
+        .map((option) => option.slice(0, 80))
+        .slice(0, 20);
+      if (options.length === 0 || typeof definition.default !== "string" || !options.includes(definition.default)) return;
+      normalized[key] = { type, label, default: definition.default, options };
+    }
+  });
+
+  return normalized;
+}
+
+function normalizeControlValue(definition, value) {
+  if (definition.type === "range") {
+    const numericValue = Number(value);
+    return Number.isFinite(numericValue)
+      ? constrain(numericValue, definition.min, definition.max)
+      : definition.default;
+  }
+  if (definition.type === "color") {
+    return typeof value === "string" && /^#[0-9a-f]{6}$/i.test(value)
+      ? value
+      : definition.default;
+  }
+  if (definition.type === "checkbox") {
+    return typeof value === "boolean" ? value : definition.default;
+  }
+  if (definition.type === "select") {
+    return definition.options.includes(value) ? value : definition.default;
+  }
+  return definition.default;
+}
+
+function readPersistedEffectControlValues() {
   try {
-    effect = eval(`(${effectCode})`);
+    const saved = JSON.parse(localStorage.getItem(getEffectControlsStorageKey()));
+    return isPlainObject(saved) ? saved : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function persistEffectControlValues() {
+  if (!effectCode) return;
+  localStorage.setItem(getEffectControlsStorageKey(), JSON.stringify(effectControlValues));
+}
+
+function initializeEffectControls({ preserveControls = true, restorePersisted = true, controlValues } = {}) {
+  const previousValues = effectControlValues;
+  normalizedControlSchema = normalizeControlSchema(effect && effect.controlSchema);
+
+  let candidateValues = {};
+  if (restorePersisted) candidateValues = readPersistedEffectControlValues();
+  if (preserveControls) candidateValues = { ...candidateValues, ...previousValues };
+  if (isPlainObject(controlValues)) candidateValues = { ...candidateValues, ...controlValues };
+
+  effectControlValues = {};
+  Object.entries(normalizedControlSchema).forEach(([key, definition]) => {
+    const candidate = Object.prototype.hasOwnProperty.call(candidateValues, key)
+      ? candidateValues[key]
+      : definition.default;
+    effectControlValues[key] = normalizeControlValue(definition, candidate);
+  });
+  effectControlValues = Object.freeze(effectControlValues);
+
+  renderEffectControls();
+  persistEffectControlValues();
+}
+
+function closeEffectControls(restoreFocus = true) {
+  const panel = document.querySelector("#effect-controls-panel");
+  const button = document.querySelector("#controls-btn");
+  if (!panel || !button) return;
+  if (restoreFocus && panel.classList.contains("active")) button.focus();
+  panel.classList.remove("active");
+  panel.inert = true;
+  panel.setAttribute("aria-hidden", "true");
+  button.setAttribute("aria-expanded", "false");
+}
+
+function renderEffectControls() {
+  const container = document.querySelector("#effect-controls");
+  const button = document.querySelector("#controls-btn");
+  if (!container || !button) return;
+
+  container.replaceChildren();
+  const controls = Object.entries(normalizedControlSchema);
+  button.hidden = controls.length === 0;
+  if (controls.length === 0) {
+    closeEffectControls(false);
+    return;
+  }
+
+  controls.forEach(([key, definition]) => {
+    const field = document.createElement("div");
+    field.className = `effect-control effect-control-${definition.type}`;
+
+    const label = document.createElement("label");
+    label.htmlFor = `effect-control-${key}`;
+    label.textContent = definition.label;
+
+    const input = document.createElement(definition.type === "select" ? "select" : "input");
+    input.id = `effect-control-${key}`;
+    input.dataset.controlKey = key;
+
+    let output;
+    if (definition.type === "range") {
+      input.type = "range";
+      input.min = definition.min;
+      input.max = definition.max;
+      input.step = definition.step;
+      input.value = effectControlValues[key];
+      output = document.createElement("output");
+      output.setAttribute("for", input.id);
+      output.textContent = effectControlValues[key];
+      field.append(label, output, input);
+    } else if (definition.type === "color") {
+      input.type = "color";
+      input.value = effectControlValues[key];
+      field.append(label, input);
+    } else if (definition.type === "checkbox") {
+      input.type = "checkbox";
+      input.checked = effectControlValues[key];
+      field.append(input, label);
+    } else {
+      definition.options.forEach((optionValue) => {
+        const option = document.createElement("option");
+        option.value = optionValue;
+        option.textContent = optionValue;
+        input.append(option);
+      });
+      input.value = effectControlValues[key];
+      field.append(label, input);
+    }
+
+    input.addEventListener("input", () => {
+      const rawValue = definition.type === "checkbox" ? input.checked : input.value;
+      effectControlValues = Object.freeze({
+        ...effectControlValues,
+        [key]: normalizeControlValue(definition, rawValue)
+      });
+      if (output) output.textContent = effectControlValues[key];
+      persistEffectControlValues();
+    });
+
+    container.append(field);
+  });
+}
+
+function isEffectControlsEvent(event) {
+  return Boolean(event && event.target && event.target.closest("#effect-controls-panel, #controls-btn"));
+}
+
+function hasValidEffectContract(candidate) {
+  return candidate !== null
+    && typeof candidate === "object"
+    && Number.isFinite(candidate.triggered)
+    && Number.isFinite(candidate.duration)
+    && candidate.duration > 0
+    && typeof candidate.trigger === "function"
+    && typeof candidate.update === "function"
+    && typeof candidate.display === "function";
+}
+
+function evaluateEffectCode(controlOptions = {}) {
+  try {
+    const evaluatedEffect = eval(`(${effectCode})`);
+    if (!hasValidEffectContract(evaluatedEffect)) {
+      throw new Error("Effect code is missing a valid triggered, duration, trigger, update, or display property.");
+    }
+    effect = evaluatedEffect;
     effects = [];
     varContainer = {};
+    initializeEffectControls(controlOptions);
+    codeError = false;
+    return true;
   } catch (e) {
+    effect = undefined;
+    effects = [];
+    varContainer = {};
+    normalizedControlSchema = {};
+    effectControlValues = Object.freeze({});
+    renderEffectControls();
+    codeError = true;
     alert(e);
+    return false;
   }
 }
 
@@ -774,7 +1056,7 @@ function draw() {
     effects = effects.filter((e) => millis() - e.triggered < e.duration);
     effects.forEach((e) => {
       try {
-        e.update(effects);
+        e.update(effects, effectControlValues);
       } catch (err) {
         codeError = true;
         alert(`Update code error, try generating again. \n${err}`)
@@ -783,7 +1065,7 @@ function draw() {
 
     effects.forEach((e) => {
       try {
-        e.display(effects);
+        e.display(effects, effectControlValues);
       } catch (err) {
         codeError = true;
         alert(`Display code error, try generating again. \n${err}`)
@@ -796,12 +1078,13 @@ function draw() {
   }
 }
 
-function mousePressed() {
+function mousePressed(event) {
+  if (isEffectControlsEvent(event)) return;
   if (checkEffect() && !codeError && !codeEdited) {
     if (millis() - triggerTimestamp > triggerDebounce) {
       effects.push({ ...effect });
       try {
-        effects.at(-1).trigger(effects, mouseX, mouseY);
+        effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
         triggerTimestamp = millis();
       } catch (err) {
         codeError = true;
@@ -811,12 +1094,13 @@ function mousePressed() {
   }
 }
 
-function mouseMoved() {
+function mouseMoved(event) {
+  if (isEffectControlsEvent(event)) return;
   if (checkEffect() && !codeError && !codeEdited) {
     if (millis() - triggerTimestamp > triggerDebounce && mouseIsPressed) {
       effects.push({ ...effect });
       try {
-        effects.at(-1).trigger(effects, mouseX, mouseY);
+        effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
         triggerTimestamp = millis();
       } catch (err) {
         codeError = true;
@@ -826,12 +1110,13 @@ function mouseMoved() {
   }
 }
 
-function touchStarted() {
+function touchStarted(event) {
+  if (isEffectControlsEvent(event)) return;
   if (checkEffect() && !codeError && !codeEdited) {
     if (millis() - triggerTimestamp > triggerDebounce) {
       effects.push({ ...effect });
       try {
-        effects.at(-1).trigger(effects, mouseX, mouseY);
+        effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
         triggerTimestamp = millis();
       } catch (err) {
         codeError = true;
@@ -842,6 +1127,7 @@ function touchStarted() {
 }
 
 function touchMoved(evt) {
+  if (isEffectControlsEvent(evt)) return;
   if (checkEffect() && !codeError && !codeEdited) {
     if (document.querySelector("#canvas-container").classList.contains("active")) {
       evt.preventDefault();
@@ -849,7 +1135,7 @@ function touchMoved(evt) {
     if (millis() - triggerTimestamp > triggerDebounce) {
       effects.push({ ...effect });
       try {
-        effects.at(-1).trigger(effects, mouseX, mouseY);
+        effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
         triggerTimestamp = millis();
       } catch (err) {
         codeError = true;
@@ -865,10 +1151,7 @@ function touchEnded() {
 
 function checkEffect() {
   if (document.querySelector("#editor-container").classList.contains("active") && !drawOverride) return false;
-  if (typeof effect !== "object") return false;
-  if (effect.triggered && effect.duration && effect.trigger && effect.display)
-    return true;
-  return false;
+  return hasValidEffectContract(effect);
 }
 
 var effects = [];
@@ -936,13 +1219,12 @@ function updateSpells() {
       effectPrompt = s.idea;
       codeInstructions = s.instructions;
       effectCode = s.code;
-      evaluateEffectCode();
+      evaluateEffectCode({ preserveControls: false, controlValues: s.controlValues });
       localStorage.setItem("backgroundColor", bgc);
       localStorage.setItem("effectPrompt", s.idea);
       localStorage.setItem("codeInstructions", s.instructions);
       localStorage.setItem("effectCode", s.code);
       busy = false;
-      codeError = false;
       codeEdited = false;
       setTimeout(() => {
         document.querySelector("#load-spell-modal-wrapper").classList.remove("active");
@@ -983,6 +1265,7 @@ const saveSpell = () => {
         instructions: codeInstructions,
         code: effectCode,
         bgc: bgc,
+        controlValues: { ...effectControlValues },
         thumbnail: tempCanvas.toDataURL('image/png'),
       }
 
@@ -1018,7 +1301,7 @@ const autoGenerateEffect = (sx, sy, ex, ey, t) => {
       effects.push({ ...effect });
       const x = random(sx, ex);
       const y = random(sy, ey);
-      effects.at(-1).trigger(effects, x, y);
+      effects.at(-1).trigger(effects, x, y, effectControlValues);
     }, timestamps[i]);
   }
 

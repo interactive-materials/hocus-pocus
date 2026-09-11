@@ -17,7 +17,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#17191B">
 
-  <link rel="stylesheet" type="text/css" href="style.css?v=116">
+  <link rel="stylesheet" type="text/css" href="style.css?v=117">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="icon" type="image/svg+xml" sizes="any"
@@ -42,6 +42,22 @@
 <body>
 
   <div id="canvas-container">
+    <button class="clickable" id="controls-btn" type="button" aria-controls="effect-controls-panel"
+      aria-expanded="false" hidden>
+      <span class="material-symbols-outlined">tune</span>
+      Controls
+    </button>
+
+    <aside id="effect-controls-panel" aria-hidden="true" aria-label="Effect controls" inert>
+      <div class="effect-controls-header">
+        <h2>Effect controls</h2>
+        <button id="close-controls-btn" type="button" aria-label="Close effect controls">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="effect-controls"></div>
+    </aside>
+
     <div class="clickable" id="edit-btn">
       <span class="material-symbols-outlined">
         edit
@@ -279,7 +295,7 @@
     </div>
 
     <script src="exampleSpells.js?v=103"></script>
-    <script src="script.js?v=115"></script>
+    <script src="script.js?v=116"></script>
 </body>
 
 </html>

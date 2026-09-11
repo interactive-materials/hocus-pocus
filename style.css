@@ -180,6 +180,134 @@ input::placeholder {
   z-index: 9;
 }
 
+#controls-btn {
+  position: absolute;
+  right: 9rem;
+  bottom: 2rem;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--goldenrod);
+  color: #211A10;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 10px 24px var(--shadow-color);
+}
+
+#controls-btn[hidden] {
+  display: none;
+}
+
+#effect-controls-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(24rem, 100vw);
+  height: 100vh;
+  z-index: 8;
+  overflow-y: auto;
+  padding: 2rem;
+  background: var(--sidebar-bg-color);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -18px 0 44px var(--shadow-color);
+  transform: translateX(100%);
+  transition: transform 200ms ease-in-out;
+}
+
+#effect-controls-panel.active {
+  transform: translateX(0);
+}
+
+.effect-controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.effect-controls-header h2 {
+  margin: 0;
+}
+
+#close-controls-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--surface-raised);
+  color: var(--font-color);
+}
+
+#close-controls-btn .material-symbols-outlined {
+  margin: 0;
+}
+
+.effect-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.effect-control label {
+  font-weight: 500;
+}
+
+.effect-control output {
+  color: var(--aquamarine);
+  font-variant-numeric: tabular-nums;
+}
+
+.effect-control input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: var(--goldenrod);
+}
+
+.effect-control input[type="color"] {
+  width: 3rem;
+  height: 2.25rem;
+  padding: 0.15rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--textarea-bg-color);
+}
+
+.effect-control input[type="checkbox"] {
+  grid-column: 1;
+  grid-row: 1;
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--goldenrod);
+}
+
+.effect-control-checkbox {
+  grid-template-columns: auto 1fr;
+}
+
+.effect-control-checkbox label {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.effect-control select {
+  min-width: 8rem;
+  padding: 0.55rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--textarea-bg-color);
+  color: var(--font-color);
+}
+
 #editor-container {
   position: fixed;
   width: 100vw;
@@ -1082,6 +1210,18 @@ BUSY
     right: 0.5rem;
     bottom: unset;
     left: unset;
+  }
+
+  #controls-btn {
+    position: fixed;
+    right: unset;
+    bottom: 1rem;
+    left: 1rem;
+  }
+
+  #effect-controls-panel {
+    width: 100vw;
+    padding: 1.25rem;
   }
 
   #effect-container.active #play-btn {
