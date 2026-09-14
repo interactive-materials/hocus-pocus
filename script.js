@@ -274,7 +274,7 @@ function setup() {
     document.querySelector("#controls-btn").setAttribute("aria-expanded", String(isOpen));
     if (isOpen) {
       const firstControl = panel.querySelector("#effect-controls input, #effect-controls select");
-      (firstControl || document.querySelector("#close-controls-btn")).focus();
+      (firstControl || document.querySelector("#close-controls-btn")).focus({ preventScroll: true });
     }
   });
 
@@ -524,6 +524,8 @@ function refreshHistory() {
     const item = document.createElement("li");
     item.classList.add("history-item");
 
+    const dateTime = document.createElement("span");
+    dateTime.classList.add("date-time");
     if (h.timestamp) {
       const d = new Date(h.timestamp);
       const year = d.getFullYear();
@@ -532,11 +534,32 @@ function refreshHistory() {
       const hours = d.getHours().toString().padStart(2, '0');
       const minutes = d.getMinutes().toString().padStart(2, '0');
 
-      item.innerHTML = `<span class="date-time">${year}-${month}-${day} ${hours}:${minutes}</span>`;
+      dateTime.textContent = `${year}-${month}-${day} ${hours}:${minutes}`;
     } else {
-      item.innerHTML = `<span class="date-time">???</span>`
+      dateTime.textContent = "???";
     }
-    item.innerHTML += `<span class="prompt">${h.prompt}</span>`;
+
+    const isRefinement = typeof h.refinement === "string" && h.refinement.trim().length > 0;
+    const historyType = document.createElement("span");
+    historyType.classList.add("history-type");
+    historyType.textContent = isRefinement ? "Refinement" : "Initial generation";
+
+    const historyMeta = document.createElement("div");
+    historyMeta.classList.add("history-meta");
+    historyMeta.append(dateTime, historyType);
+
+    const prompt = document.createElement("span");
+    prompt.classList.add("prompt");
+    prompt.textContent = h.prompt;
+
+    item.append(historyMeta, prompt);
+
+    if (isRefinement) {
+      const refinementPrompt = document.createElement("span");
+      refinementPrompt.classList.add("refinement-prompt");
+      refinementPrompt.textContent = h.refinement;
+      item.append(refinementPrompt);
+    }
 
     const shareBtn = document.createElement("span");
     shareBtn.classList.add("history-btn");
@@ -831,7 +854,7 @@ function normalizeControlSchema(schema) {
   if (!isPlainObject(schema)) return {};
 
   const normalized = {};
-  Object.entries(schema).slice(0, 12).forEach(([key, definition]) => {
+  Object.entries(schema).forEach(([key, definition]) => {
     if (!/^[A-Za-z_$][\w$]*$/.test(key) || !isPlainObject(definition)) return;
 
     const type = definition.type;
@@ -934,7 +957,7 @@ function closeEffectControls(restoreFocus = true) {
   const panel = document.querySelector("#effect-controls-panel");
   const button = document.querySelector("#controls-btn");
   if (!panel || !button) return;
-  if (restoreFocus && panel.classList.contains("active")) button.focus();
+  if (restoreFocus && panel.classList.contains("active")) button.focus({ preventScroll: true });
   panel.classList.remove("active");
   panel.inert = true;
   panel.setAttribute("aria-hidden", "true");
