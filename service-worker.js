@@ -1,11 +1,11 @@
 // Increment this whenever the application shell changes.
-const CACHE_NAME = 'hocus-pocus-v5';
+const CACHE_NAME = 'hocus-pocus-v6';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/style.css?v=119',
+  '/style.css?v=120',
   '/editorTheme.css?v=103',
-  '/script.js?v=118',
+  '/script.js?v=119',
   '/exampleSpells.js?v=103',
   '/manifest.json',
   '/icons/icon-512x512.png'

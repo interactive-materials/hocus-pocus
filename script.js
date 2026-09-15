@@ -15,7 +15,8 @@ let effectControlValues = Object.freeze({});
 let normalizedControlSchema = {};
 
 let apiKey = "";
-let gptModel = "gpt-5.6-luna";
+const gptModels = ["gpt-5.6-luna", "gpt-5.6-terra"];
+let gptModel = gptModels[0];
 let maxTokens = 5000;
 let temperature = 0.5;
 let reasoningLevel = "medium";
@@ -172,6 +173,11 @@ function setup() {
     apiKey = localStorage.getItem("apiKey");
     document.querySelector("#api-key").value = apiKey;
   }
+
+  if (gptModels.includes(localStorage.getItem("gptModel"))) {
+    gptModel = localStorage.getItem("gptModel");
+  }
+  document.querySelector("#gpt-model").value = gptModel;
 
   if (localStorage.getItem("effectPrompt")) {
     effectPrompt = localStorage.getItem("effectPrompt");
@@ -431,6 +437,11 @@ function setup() {
   document.querySelector("#api-key").addEventListener("change", (e) => {
     apiKey = e.target.value;
     localStorage.setItem("apiKey", apiKey);
+  });
+
+  document.querySelector("#gpt-model").addEventListener("change", (e) => {
+    gptModel = e.target.value;
+    localStorage.setItem("gptModel", gptModel);
   });
 
   document.querySelectorAll(".color-swatch").forEach(swatch => {

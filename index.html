@@ -17,7 +17,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#17191B">
 
-  <link rel="stylesheet" type="text/css" href="style.css?v=119">
+  <link rel="stylesheet" type="text/css" href="style.css?v=120">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link rel="icon" type="image/svg+xml" sizes="any"
@@ -251,6 +251,12 @@
           <p>This application uses the GPT4.1 engine by OpenAI. Get an API key from <a target="_blank"
               href="https://platform.openai.com/">here</a>.</p>
           <input type="password" id="api-key" value="">
+          <h3>Model</h3>
+          <p>Choose which model generates the effects.</p>
+          <select id="gpt-model">
+            <option value="gpt-5.6-luna">gpt-5.6-luna</option>
+            <option value="gpt-5.6-terra">gpt-5.6-terra</option>
+          </select>
         </div>
 
         <div class="ui-block" id="credits">
@@ -295,7 +301,7 @@
     </div>
 
     <script src="exampleSpells.js?v=103"></script>
-    <script src="script.js?v=118"></script>
+    <script src="script.js?v=119"></script>
 </body>
 
 </html>

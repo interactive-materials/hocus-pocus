@@ -602,7 +602,8 @@ SIDE BAR
   font-weight: 400;
 }
 
-.side-bar input[type="password"] {
+.side-bar input[type="password"],
+.side-bar select {
   color: var(--indianred);
   font-size: 1.1rem;
   background: white;
@@ -613,6 +614,11 @@ SIDE BAR
   field-sizing: content;
   resize: none;
   outline: none;
+}
+
+.side-bar select {
+  font-family: "Barlow", sans-serif;
+  cursor: pointer;
 }
 
 .side-bar #credits {
@@ -1326,6 +1332,7 @@ textarea:focus-visible,
 
 textarea:focus,
 .side-bar input[type="password"]:focus,
+.side-bar select:focus,
 .modal input[type="text"]:focus {
   border-color: var(--focus-color);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-color) 22%, transparent);
@@ -1458,6 +1465,7 @@ button#import-spellbook,
 }
 
 .side-bar input[type="password"],
+.side-bar select,
 .modal input[type="text"] {
   color: var(--font-color);
   background: var(--textarea-bg-color);
