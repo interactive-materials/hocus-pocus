@@ -221,6 +221,14 @@ input::placeholder {
   transform: translateX(0);
 }
 
+#effect-controls {
+  /*
+   * Reserve scrollable space below the final control for the floating
+   * Controls and Edit buttons.
+   */
+  padding-bottom: 4.5rem;
+}
+
 .effect-controls-header {
   display: flex;
   align-items: center;
@@ -1235,13 +1243,6 @@ BUSY
     right: 0.5rem;
     bottom: unset;
     left: unset;
-  }
-
-  #controls-btn {
-    position: fixed;
-    right: unset;
-    bottom: 1rem;
-    left: 1rem;
   }
 
   #effect-controls-panel {
