@@ -1112,36 +1112,38 @@ function draw() {
   }
 }
 
-function mousePressed(event) {
-  if (isEffectControlsEvent(event)) return;
-  if (checkEffect() && !codeError && !codeEdited) {
-    if (millis() - triggerTimestamp > triggerDebounce) {
-      effects.push({ ...effect });
-      try {
-        effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
-        triggerTimestamp = millis();
-      } catch (err) {
-        codeError = true;
-        alert(`Trigger code error, try generating again. \n${err}`)
-      }
-    }
+let pressStartedOnControls = false;
+
+function spawnEffect() {
+  if (!checkEffect() || codeError || codeEdited) return;
+  if (millis() - triggerTimestamp <= triggerDebounce) return;
+
+  effects.push({ ...effect });
+  try {
+    effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
+    triggerTimestamp = millis();
+  } catch (err) {
+    codeError = true;
+    alert(`Trigger code error, try generating again. \n${err}`);
   }
 }
 
-function mouseMoved(event) {
-  if (isEffectControlsEvent(event)) return;
-  if (checkEffect() && !codeError && !codeEdited) {
-    if (millis() - triggerTimestamp > triggerDebounce && mouseIsPressed) {
-      effects.push({ ...effect });
-      try {
-        effects.at(-1).trigger(effects, mouseX, mouseY, effectControlValues);
-        triggerTimestamp = millis();
-      } catch (err) {
-        codeError = true;
-        alert(`Trigger code error, try generating again. \n${err}`)
-      }
-    }
-  }
+function mousePressed(event) {
+  pressStartedOnControls = isEffectControlsEvent(event);
+  if (pressStartedOnControls) return;
+  spawnEffect();
+}
+
+// Runs for mouse movement with a button held AND for touch/pen movement while in contact.
+function mouseDragged(event) {
+  if (pressStartedOnControls || isEffectControlsEvent(event)) return;
+  spawnEffect();
+}
+
+function mouseReleased() {
+  pressStartedOnControls = false;
+  // Same as the old touchEnded: let the next press fire immediately.
+  triggerTimestamp = -1;
 }
 
 function touchStarted(event) {
