@@ -183,7 +183,7 @@ input::placeholder {
 #controls-btn {
   position: absolute;
   right: 9rem;
-  bottom: 2rem;
+  bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
   z-index: 9;
   display: flex;
   align-items: center;
