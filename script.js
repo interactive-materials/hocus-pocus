@@ -90,6 +90,7 @@ Rules:
 - No let/const/var/function/export, no code fences, no extra text.
 - Do not change anything else except as specified in the refinements.
 - Keep the object structure, properties/methods and comments intact as far as possible.
+- Include comments in newlines to explain the code at every step in simple terms, easily understandable by a child of 7-12 years old. Do not append comments to existing lines of code. Preserve pre-existing comments unless they are outdated.
 - Replace the commented preamble explaining instead the key changes made and the new pseudocode of the programme (using newlines as line breaks) and how it works but do not label it as a preamble or pseudocode..
 
 Required properties/methods (must always exist):

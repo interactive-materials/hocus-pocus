@@ -630,9 +630,9 @@ SIDE BAR
 }
 
 .side-bar #credits {
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
+  position: static;
+  margin-top: auto;
+  padding-top: 2rem;
 }
 
 #history-list {
@@ -646,9 +646,10 @@ SIDE BAR
 .history-item {
   display: grid;
   grid-template-columns: 1fr auto auto;
-  gap: 0.5rem;
+  row-gap: 0rem;
+  column-gap: 0.5rem;
   align-items: center;
-  padding-bottom: 0.6rem;
+  padding-bottom: 1.4rem;
   padding-top: 0.6rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   list-style: none;
@@ -658,13 +659,14 @@ SIDE BAR
 .history-item .prompt,
 .history-item .refinement-prompt {
   grid-column: 1;
+  line-height: 1.1;
 }
 
 .history-item .history-meta {
   grid-row: 1;
   display: flex;
   align-items: baseline;
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
 .history-item .date-time,
@@ -683,6 +685,7 @@ SIDE BAR
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
   min-width: 0;
   font-size: 0.9rem;
 }
@@ -770,6 +773,8 @@ SIDE BAR
 
 #settings-container {
   width: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
 #history-container,
@@ -1286,12 +1291,6 @@ BUSY
     display: none !important;
   }
 
-  .side-bar #credits {
-    position: absolute;
-    bottom: 2rem;
-    left: 0;
-  }
-
   #spellbook-container #spellbook-welcome {
     margin-bottom: 0;
   }
@@ -1301,6 +1300,26 @@ BUSY
     font-size: 1.5rem;
   }
 
+}
+
+@media (width <=600px) {
+  #history-container .ui-block:has(.side-bar-buttons) {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .side-bar-buttons {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  #history-list {
+    margin-top: 0.75rem;
+  }
 }
 
 /*

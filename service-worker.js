@@ -1,23 +1,14 @@
 // Increment this whenever the application shell changes.
 const CACHE_NAME = 'hocus-pocus-v7';
 const urlsToCache = [
-  './',
-  './index.html',
-  './style.css?v=121',
-  './editorTheme.css?v=103',
-  './script.js?v=120',
-  './exampleSpells.js?v=103',
-  './hocuspocus_spellbook.json',
-  './manifest.json',
-  './icons/icon-192x192.png',
-  './icons/icon-512x512.png',
-  './icons/apple-touch-icon.png',
-  // CDN dependencies (opaque no-cors responses are fine for <script>/<link>)
-  'https://cdn.jsdelivr.net/npm/p5@2.3.4/lib/p5.min.js',
-  'https://cdn.jsdelivr.net/npm/p5.sound@0.4.1/dist/p5.sound.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/mode/javascript/javascript.min.js'
+  '/',
+  '/index.html',
+  '/style.css?v=120',
+  '/editorTheme.css?v=103',
+  '/script.js?v=120',
+  '/exampleSpells.js?v=103',
+  '/manifest.json',
+  '/icons/icon-512x512.png'
 ];
 
 // --- Installation Event ---
